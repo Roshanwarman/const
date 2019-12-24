@@ -1,0 +1,110 @@
+DELAY PREVENTION
+
+For both construction and manufacturing
+Safety Violations
+Object detection for respirators, helmets, safety vests, gloves
+Guardrails around loose objects like concrete tubes, etc...
+Spill detection
+Keep spills two feet away from the edge of a trench
+Machine guarding {Uncovered : 1. Chips and Sparks, 2. Nip points,3.  Rotating parts}
+Guarding of portable circular saw detection
+Scaffolding
+Will have to be somewhat interactive re: daily scaffold safety check etc. , have people been trained
+https://www.youtube.com/watch?v=u_O5vIPhAcI
+Fall Prevention
+Slippery surfaces
+If a person’s head is tilted upwards and they see a full person and there is nothing that crosses through that person (e.g. bar) then flag.
+HOW to detect whether something crosses through the person
+Hazardous Chemicals - OCR of chemical checked with databank of Safety sheets on site
+Forklifts, Cranes - missing rubber on pedals, illegible data plates showing max capacity etc., no seatbelt; Make sure crane range of motion doesn’t extend to a worker’s location (e.g., do not move load above a worker’s head)
+Ladders
+Ladder 3ft above landing
+ ladders tied together/ontop of each other
+Clear stairways; no debris on ladder also
+Electrical Wires - tied to walls, on a sharp corner, lamps without cover
+Prevent ladders or cranes from getting in contact with overhead power lines.
+Worn or frayed cables
+Loose wires on the ground.
+Exposed electrical parts (no cover or not weather safe)
+Defective cords and wires; plastic or rubber part is missing
+Improper grounding (i.e., plug is broken or wire is broken on extension cord.)
+MORE
+Store all Video with searchable lookup
+Handle Recordable Cases for Hearing Loss
+Track when people come and go to help with hour billables and to find individual people if they are needed
+Segment out machines and elevators and tell how active they are
+Track truck arrival and departure
+Vandalism and Theft/ Detection after hours
+Detect fires
+Detect fights
+Lazy worker defined as inactive for > 3 minutes. Worker Activity = Body movement || (Hands moving && !Phone Usage)
+
+
+> Stitch this stuff into a daily report
+> Excavation cave in protection
+
+https://www.osha.gov/dte/library/FY2014_MFC_Construction/FY2014_MFC_Construction_Main.html
+
+Understanding SSD:
+https://mc.ai/real-time-object-detection-part-1-understanding-ssd/
+Retraining YOLO:
+https://towardsdatascience.com/training-yolo-for-object-detection-in-pytorch-with-your-custom-dataset-the-simple-way-1aa6f56cf7d9
+
+Datasets:
+https://github.com/njvisionpower/Safety-Helmet-Wearing-Dataset
+https://github.com/wujixiu/helmet-detection
+> VR
+
+Need to consider: If person sees the same scene violation, we can’t count that twice.
+Maybe correlate the images of two scenes previously seen so that if they are too similar, do not count?
+Maybe keep redundant violations so they attract more attention
+----------
+
+Other Ideas :
+
+-> Smart cameras for nursing motivation
+
+https://www.researchgate.net/publication/329932897_A_Deep_Learning-based_Approach_for_Mitigating_Falls_from_Height_with_Computer_Vision_Convolutional_Neural_Network_Accepted_Version
+
+https://www.sciencedirect.com/science/article/abs/pii/S0926580518308422
+
+
+
+Paper
+Notes
+https://www.researchgate.net/publication/329932897_A_Deep_Learning-based_Approach_for_Mitigating_Falls_from_Height_with_Computer_Vision_Convolutional_Neural_Network_Accepted_Version
+Height detection for scaffolds?
+Used CNN to detect people walking over structural supports (which one is not supposed to do, but can save time when walking around a construction site) in real time to help prevent injuries. Used region based network for scene labeling (use similar technique to detect people using other equipment such as ladder? Just as they determined people walking over certain structural support, use to detect person using or operating on specific object?)
+
+
+
+
+
+Construction worker detection in video frames for initializing vision trackers
+https://www.sciencedirect.com/science/article/pii/S0926580512001136
+
+
+
+
+
+I. Brilakis, M.W. Park, G. Jog Automated vision tracking of project related entities Journal of Advanced Engineering Informatics, 25 (4) (2011), pp. 713-724
+
+
+https://sci-hub.tw/https://www.sciencedirect.com/science/article/abs/pii/S0926580517304314
+Uses cnn to detect if there is a guardrail present. Accuracy of 96.5% which is pretty good. Reach out to authors for image data set.
+We can now detect if there isn’t any guardrails, but the hard problem is detecting if there should be a guardrail if there isn’t any.
+https://www.sciencedirect.com/science/article/pii/S1474034613000761
+Detects different motions for excavators (digging, hauling swinging). May be useful in characterizing activity of construction machines.
+automation in construction journal
+
+
+https://pdfs.semanticscholar.org/2ff5/e4cf93c8bc3057c654e17a988abc36a58a5a.pdf
+Safety Vest detection
+https://link.springer.com/article/10.1007/s12205-017-1730-3
+Safety Vest detection meta-analysis
+https://github.com/wujixiu/helmet-detection/tree/master/hardhat-wearing-detection
+
+
+https://ascelibrary.org/doi/abs/10.1061/(ASCE)CP.1943-5487.0000279
+Improper ladder climbing detection
+Easy addon
