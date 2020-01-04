@@ -3,7 +3,6 @@ import datetime
 import imutils
 import time
 import cv2
-import time
 import numpy as np
 
 cap = cv2.VideoCapture(0)
@@ -21,7 +20,7 @@ cap = cv2.VideoCapture(0)
 #
 # def SAD(block, index1, index2, image):
 #     absolute = frame.
-#
+
 first = None
 while(True):
 
@@ -44,14 +43,14 @@ while(True):
         # print(np.amax(width_array))
 
         frame_height, frame_width = gray1.shape
-        print(gray1.shape)
+        # print(gray1.shape)
         #border for frame; consider removing later if SAD doesn't work
 
-        frame = cv2.line(frame, (0, 0), (0, frame_width), (0,0,0), 1)
-        frame = cv2.line(frame, (0, 0), (frame_height, 0), (0,0,0), 1)
-        frame = cv2.line(frame, (frame_height, frame_width), (0, frame_width), (0,255,0), 1)
-        frame = cv2.line(frame, (frame_height, 0), (frame_height, frame_width),  (0,255,0), 1)
-
+        # frame = cv2.line(frame, (0, 0), (0, frame_width), (0,0,0), 1)
+        # frame = cv2.line(frame, (0, 0), (frame_height, 0), (0,0,0), 1)
+        # frame = cv2.line(frame, (frame_height, frame_width), (0, frame_width), (0,255,0), 1)
+        # frame = cv2.line(frame, (frame_height, 0), (frame_height, frame_width),  (0,255,0), 1)
+        #
 
 
         for t in width_array:
@@ -75,21 +74,20 @@ while(True):
         frame_difference = cv2.absdiff(first, gray)
         threshold = cv2.threshold(frame_difference, 25, 255, cv2.THRESH_BINARY)[1]
 
-        threshold = cv2.dilate(threshold, None, iterations = 2)
+        # threshold = cv2.dilate(threshold, None, iterations = 2)
         countours = cv2.findContours(threshold, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
 
         countours = imutils.grab_contours(countours)
 
         for c in countours:
-            if cv2.contourArea(c) < 100000 and cv2.contourArea(c) > 50000:
+            if cv2.contourArea(c) < 10000:
                 continue
 
             (x, y, w, h) = cv2.boundingRect(c)
-            # cv2.rectangle(frame, (x,y), (x+w, y+h) , (0,255,0), 1)
+            frame = cv2.rectangle(frame, (x,y), (x+w, y+h) , (0,255,0), 1)
 
 
 
-        frame[:,:,0:2] = 0
         cv2.imshow("constructionbox", frame)
 
     if cv2.waitKey(1) == ord('q'):

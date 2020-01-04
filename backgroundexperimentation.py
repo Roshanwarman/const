@@ -4,11 +4,11 @@ import imutils
 
 
 cap = cv2.VideoCapture(0)
-fconvolve = cv2.createBackgroundSubtractorMOG2()
+fconvolve = cv2.createBackgroundSubtractorMOG()
 
 while(cap.isOpened()):
 
-    
+
 
     t, frame = cap.read()
 
@@ -22,7 +22,7 @@ while(cap.isOpened()):
     countours = imutils.grab_contours(countours)
 
     for c in countours:
-        if cv2.contourArea(c) < 1000:
+        if cv2.contourArea(c) < 10000:
             continue
 
         (x, y, w, h) = cv2.boundingRect(c)
