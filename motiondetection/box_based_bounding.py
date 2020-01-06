@@ -75,20 +75,37 @@ def create_blocks(image):
     blocks = []
     for i in range(len(width_array) -1 ):
         for j in range(len(height_array) - 1):
-            blocks.append(image[height_array[j] : height_array[j+1], width_array[i] : width_array[i+1]])
+            blocks.append(image[height_array[j] : height_array[j+1]], width_array[i] : width[array[i+1]])
 
+
+            #add edge blocks for image; this only goes to len(array) -1, so capture the end array separately
     return blocks
 
 
-def SAD(im1_block, im2_block):
+def SAD(image1, image2):
+    im1_blocks = create_blocks(image_1)
+    im2_blocks = create_blocks(image_2)
     SAD = []
-
     for i in range(len(im1_block)):
-        SAD.append(np.sum(np.absolute(np.subtract(im1_block[i], im2_block[i]))))
+        SAD.append(np.sum(np.absolute(im1_block[i] - im2_block[i])))
 
     return SAD
 
 
+
+def minimum_indexed_block(*images):
+    SAD_tensor = np.array([])
+
+    for i in range(len(images)-1):
+        SAD_tensor = np.vstack(SAD_tensor, SAD(images[i], images[i+1]))
+
+    flipped = SAD_tensor.transpose()
+    minimum_blocks = np.array([])
+
+    for i in flipped:
+        minimum_blocks = np.concatenate(minmum_blocks, np.where(i == i.min())[0][0])
+
+    return minimum_blocks
 
 
 if __name__ == "__main__":
@@ -103,7 +120,7 @@ if __name__ == "__main__":
     # plt.subplot(222)
     # plt.imshow(second_block)
     # plt.show()
-    print(np.sum(np.abs(first_block - first_block)))
+    print(SAD())
 
     cv2.waitKey(0)
     cv2.destroyAllWindows()
