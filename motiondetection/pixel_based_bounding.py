@@ -1,3 +1,21 @@
+# import cv2
+#
+#
+# img1 = cv2.imread('puc.jpg')
+#
+# e1 = cv2.getTickCount()
+# for i in range(1,49,2):
+#     img1 = cv2.medianBlur(img1,i)
+#     cv2.imshow("hie", img1)
+#     if cv2.waitKey(0):
+#         continue
+# e2 = cv2.getTickCount()
+# t = (e2 - e1)/cv2.getTickFrequency()
+# 
+#
+# print(t)
+
+
 from imutils.video import VideoStream
 import datetime
 import imutils
@@ -95,30 +113,30 @@ while(True):
 cap.release()
 cv2.destroyAllWindows()
 
-# import cv2
-# import numpy
-# import matplotlib.pyplot as plt
-#
-# cap = cv2.VideoCapture('movie.mp4')
-# t = True
-# while(t):
-#     t, frame = cap.read()
-#     if t:
-#
-#         cv2.imshow('video', frame)
-#
-#         if cv2.waitKey(1) & 0xFF  == ord('q'):
-#             break
-#
-# cap.release()
-# cv2.destroyAllWindows()
-# # img = cv2.imread('image.JPG', cv2.IMREAD_COLOR)
-# # cv2.imshow('image', img)
-# # cv2.waitKey(0)
+# # import cv2
+# # import numpy
+# # import matplotlib.pyplot as plt
+# #
+# # cap = cv2.VideoCapture('movie.mp4')
+# # t = True
+# # while(t):
+# #     t, frame = cap.read()
+# #     if t:
+# #
+# #         cv2.imshow('video', frame)
+# #
+# #         if cv2.waitKey(1) & 0xFF  == ord('q'):
+# #             break
+# #
+# # cap.release()
 # # cv2.destroyAllWindows()
-#
-# # from urllib import request
+# # # img = cv2.imread('image.JPG', cv2.IMREAD_COLOR)
+# # # cv2.imshow('image', img)
+# # # cv2.waitKey(0)
+# # # cv2.destroyAllWindows()
 # #
-# # import re
-# #
-# # new_url = re.sub("tube", "pak", url_initial)
+# # # from urllib import request
+# # #
+# # # import re
+# # #
+# # # new_url = re.sub("tube", "pak", url_initial)
