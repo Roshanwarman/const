@@ -37,6 +37,8 @@ class Block:
 def create_blocks(image):
 
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    image = cv2.cvtColor(src, cv2.COLOR_BGR2GRAY )
+
     height, width = gray.shape
 
     # width_array = np.array([x for x in range(0, width, np.floor(width/16))])
@@ -62,8 +64,8 @@ def create_blocks(image):
 
 
 def SAD(image1, image2):
-    im1_blocks = create_blocks(image_1)
-    im2_blocks = create_blocks(image_2)
+    im1_blocks = create_blocks(image1)
+    im2_blocks = create_blocks(image2)
     SAD = []
     for i in range(len(im1_block)):
         SAD.append(np.sum(np.absolute(im1_block[i].value - im2_block[i].value)))
@@ -72,11 +74,10 @@ def SAD(image1, image2):
 
 
 
-def minimum_indexed_block(*images):
+def minimum_indexed_block(images):
 
     SAD_tensor = SAD(images[0], images[1])
 
-    # blocks_tensor = create_blocks(images)
 
     for i in range(1, len(images)-1):
         SAD_tensor = np.vstack(SAD_tensor, SAD(images[i], images[i+1]))
@@ -85,11 +86,11 @@ def minimum_indexed_block(*images):
     minimum_blocks = np.array([])
 
     for i in flipped:
-        minimum_blocks = np.concatenate(minmum_blocks, np.where(i == i.min())[0][0])
+        minimum_blocks = np.append(minmum_blocks, np.where(i == i.min())[0][0])
     #minimum_blocks returns array [b1, b2, ... , bk] where b1 is the image that contains the arg min block in position (i,j) -> reshape
     reconstructed_background = np.array([])
     for i in range(len(minimum_blocks)):
-        reconstructed_background = np.concatenate(reconstructed_background, create_blocks[images[minimum_blocks[i]]][i])
+        reconstructed_background = np.append(reconstructed_background, create_blocks[images[minimum_blocks[i]]][i])
 
     #reconstructed_background is 1D array of Block objects that are minimium SAD for each block location
 
@@ -114,15 +115,20 @@ if __name__ == "__main__":
     initial_time = time.time()
     while(True):
         t, frame = cap.read()
-        image_sequence = np.concatenate(image_sequence, np.array([frame]))
-        cv2.imshow("current frame", frame)
+        print(frame)
+        image_sequence = np.append(image_sequence, frame)
+        if t:
+            cv2.imshow("current frame", frame)
 
-        if time.time() - initial_time > 20:
+        if cv2.waitKey(1) == ord('q'):
+            break
+
+        if time.time() - initial_time > 10:
             break
 
     cap.release()
 
-    cv2.imshow("helo", minimum_indexed_blocks(image_sequence))
+    cv2.imshow("helo", minimum_indexed_block(image_sequence))
 
 
     if cv2.waitKey(0) == ord('q'):
