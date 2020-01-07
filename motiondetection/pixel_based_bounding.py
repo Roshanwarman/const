@@ -93,8 +93,10 @@ def SAD(im1_block, im2_block):
 
 if __name__ == "__main__":
 
-    image = cv2.imread("puc.JPG")
-    # print(image)
+    image = cv2.imread("../puc.JPG")
+    cv2.imshow("hi", image)
+
+
     blocks = np.array(create_blocks(image))
     first_block  = blocks[0]
     second_block = blocks[1]
@@ -103,10 +105,10 @@ if __name__ == "__main__":
     # plt.subplot(222)
     # plt.imshow(second_block)
     # plt.show()
-    print(np.sum(np.abs(first_block - first_block)))
+    # print(np.sum(np.abs(first_block - first_block)))
 
     cv2.waitKey(0)
-    cv2.destroyAllWindows()
+    cv2.destroyAllWindows(cv2)
 # first = None
 # while(True):
 #
