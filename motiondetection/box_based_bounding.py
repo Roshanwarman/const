@@ -110,86 +110,89 @@ if __name__ == "__main__":
     cap = cv2.VideoCapture(0)
 
     # first = None
-    i = 0
-    while(i  > 0):
-
-        for i in range()
-
-        image_sequence = np.array([])
-
-        for i in range(100):
-            t, frame = cap.read()
-            image_sequence = np.concatenate(image_sequence, frame)
-
-
+    image_sequence = np.array([])
+    initial_time = time.time()
+    while(True):
+        t, frame = cap.read()
+        image_sequence = np.concatenate(image_sequence, np.array([frame]))
         cv2.imshow("current frame", frame)
-        cv2.imshow("helo", minimum_indexed_blocks(image_sequence))
-        if t:
 
-            frame = imutils.resize(frame, width=500)
-            gray1 = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        if time.time() - initial_time > 20:
+            break
 
-            width, height = gray1.shape
+    cap.release()
 
-            width_array = np.array([x for x in range(0, width, round(width/16))])
-            height_array  = np.array([y for y in range(0, height, round(height/16))])
+    cv2.imshow("helo", minimum_indexed_blocks(image_sequence))
 
 
-            gridx, gridy= np.meshgrid(height_array, width_array)
+    if cv2.waitKey(0) == ord('q'):
+        cv2.destroyAllWindows()
+        # if t:
+        #
+        #     frame = imutils.resize(frame, width=500)
+        #     gray1 = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        #
+        #     width, height = gray1.shape
+        #
+        #     width_array = np.array([x for x in range(0, width, round(width/16))])
+        #     height_array  = np.array([y for y in range(0, height, round(height/16))])
+        #
+        #
+        #     gridx, gridy= np.meshgrid(height_array, width_array)
 
             # print(np.amax(height_array))
             # print(np.amax(width_array))
 
-            frame_height, frame_width = gray1.shape
+            # frame_height, frame_width = gray1.shape
             # print(gray1.shape)
 
             # border for frame; consider removing later if SAD doesn't work
 
-            frame = cv2.line(frame, (0, 0), (0, frame_width), (0,0,0), 1)
-            frame = cv2.line(frame, (0, 0), (frame_height, 0), (0,0,0), 1)
-            frame = cv2.line(frame, (frame_height, frame_width), (0, frame_width), (0,255,0), 1)
-            frame = cv2.line(frame, (frame_height, 0), (frame_height, frame_width),  (0,255,0), 1)
+            # frame = cv2.line(frame, (0, 0), (0, frame_width), (0,0,0), 1)
+            # frame = cv2.line(frame, (0, 0), (frame_height, 0), (0,0,0), 1)
+            # frame = cv2.line(frame, (frame_height, frame_width), (0, frame_width), (0,255,0), 1)
+            # frame = cv2.line(frame, (frame_height, 0), (frame_height, frame_width),  (0,255,0), 1)
 
 
-
-            for t in width_array:
-                frame = cv2.line(frame, (0, t), (frame_width, t), (255,0, 255), 1)
-            for f in height_array:
-                frame = cv2.line(frame, (f, 0), (f, frame_height), (255,0,255), 1)
-
-            gray = cv2.GaussianBlur(gray1, (21, 21), 0)
-
-            if first is None:
+            #
+            # for t in width_array:
+            #     frame = cv2.line(frame, (0, t), (frame_width, t), (255,0, 255), 1)
+            # for f in height_array:
+            #     frame = cv2.line(frame, (f, 0), (f, frame_height), (255,0,255), 1)
+            #
+            # gray = cv2.GaussianBlur(gray1, (21, 21), 0)
+            #
+            # if first is None:
                 # first_time = time.time()
-                first = gray
-                continue
+                # first = gray
+                # continue
 
             # if time.time() - first_time > 1:
             #     first_time = time.time()
             #     first = gray
 
 
-
-            frame_difference = cv2.absdiff(first, gray)
-            threshold = cv2.threshold(frame_difference, 25, 255, cv2.THRESH_BINARY)[1]
+            #
+            # frame_difference = cv2.absdiff(first, gray)
+            # threshold = cv2.threshold(frame_difference, 25, 255, cv2.THRESH_BINARY)[1]
 
             # threshold = cv2.dilate(threshold, None, iterations = 2)
-            countours = cv2.findContours(threshold, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+            # countours = cv2.findContours(threshold, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
 
-            countours = imutils.grab_contours(countours)
-
-            for c in countours:
-                if cv2.contourArea(c) < 10000:
-                    continue
-
-                (x, y, w, h) = cv2.boundingRect(c)
-                frame = cv2.rectangle(frame, (x,y), (x+w, y+h) , (0,255,0), 1)
-
-
-
-            cv2.imshow("constructionbox", frame)
-
-        if cv2.waitKey(1) == ord('q'):
-            break
-    cap.release()
-    cv2.destroyAllWindows()
+    #         countours = imutils.grab_contours(countours)
+    #
+    #         for c in countours:
+    #             if cv2.contourArea(c) < 10000:
+    #                 continue
+    #
+    #             (x, y, w, h) = cv2.boundingRect(c)
+    #             frame = cv2.rectangle(frame, (x,y), (x+w, y+h) , (0,255,0), 1)
+    #
+    #
+    #
+    #         cv2.imshow("constructionbox", frame)
+    #
+    #     if cv2.waitKey(1) == ord('q'):
+    #         break
+    # cap.release()
+    # cv2.destroyAllWindows()
