@@ -1,20 +1,3 @@
-# import cv2
-#
-#
-# img1 = cv2.imread('puc.jpg')
-#
-# e1 = cv2.getTickCount()
-# for i in range(1,49,2):
-#     img1 = cv2.medianBlur(img1,i)
-#     cv2.imshow("hie", img1)
-#     if cv2.waitKey(0):
-#         continue
-# e2 = cv2.getTickCount()
-# t = (e2 - e1)/cv2.getTickFrequency()
-#
-#
-# print(t)
-
 import matplotlib.pyplot as plt
 from imutils.video import VideoStream
 import datetime
@@ -25,22 +8,23 @@ import numpy as np
 
 
 
+
 class Block:
 
 
     def __init__(self, value):
-        self.block_matrix = value
+        self.value = value
         # self.index = index
 
 
 
 def create_blocks(image):
 
+    # gray = cv2.imread(image, cv2.IMREAD_GRAYSCALE)
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    image = cv2.cvtColor(src, cv2.COLOR_BGR2GRAY )
-
+    # print(image)
+    # return image
     height, width = gray.shape
-
     # width_array = np.array([x for x in range(0, width, np.floor(width/16))])
     # height_array  = np.array([y for y in range(0, height, np.floor(height/16))])
     height_array  = np.array([y for y in range(0, height, 330)])
@@ -51,21 +35,21 @@ def create_blocks(image):
     for i in range(len(width_array) -1 ):
         for j in range(len(height_array) - 1):
             if i == len(width_array) - 2 and j == len(height_array) - 2:
-                blocks.append(Block(image[height_array[j] : height -1, width_array[i] : width -1]))
+                blocks.append(Block(gray[height_array[j] : height -1, width_array[i] : width -1]))
             elif i == len(width_array) - 1:
-                blocks.append(Block(image[height_array[j] : height_array[j+1], width_array[i] : width-1 ]))
+                blocks.append(Block(gray[height_array[j] : height_array[j+1], width_array[i] : width-1 ]))
             elif j == len(height_array) -1:
-                blocks.append(Block(image[height_array[j] : height -1, width_array[i] : width_array[i+1]]))
+                blocks.append(Block(gray[height_array[j] : height -1, width_array[i] : width_array[i+1]]))
             else:
-                blocks.append(Block(image[height_array[j] : height_array[j+1], width_array[i] : width_array[i+1]]))
+                blocks.append(Block(gray[height_array[j] : height_array[j+1], width_array[i] : width_array[i+1]]))
 
             #add edge blocks for image; this only goes to len(array) -1, so capture the end array separately
     return blocks
 
 
 def SAD(image1, image2):
-    im1_blocks = create_blocks(image1)
-    im2_blocks = create_blocks(image2)
+    im1_block = create_blocks(image1)
+    im2_block = create_blocks(image2)
     SAD = []
     for i in range(len(im1_block)):
         SAD.append(np.sum(np.absolute(im1_block[i].value - im2_block[i].value)))
@@ -74,33 +58,53 @@ def SAD(image1, image2):
 
 
 
+
+
 def minimum_indexed_block(images):
-
+    # two = images[0].shape
     SAD_tensor = SAD(images[0], images[1])
-
+    gray = cv2.cvtColor(images[0], cv2.COLOR_BGR2GRAY)
+    (h, w) = gray.shape
+    height_array  = np.array([y for y in range(0, h, 330)])
+    width_array = np.array([x for x in range(0, w, 330)])
+    height, width = len(height_array), len(width_array)
 
     for i in range(1, len(images)-1):
-        SAD_tensor = np.vstack(SAD_tensor, SAD(images[i], images[i+1]))
+        vadd = SAD(images[i], images[i+1])
+        SAD_tensor = np.vstack((SAD_tensor, vadd))
+
 
     flipped = SAD_tensor.transpose()
     minimum_blocks = np.array([])
 
     for i in flipped:
-        minimum_blocks = np.append(minmum_blocks, np.where(i == i.min())[0][0])
-    #minimum_blocks returns array [b1, b2, ... , bk] where b1 is the image that contains the arg min block in position (i,j) -> reshape
-    reconstructed_background = np.array([])
-    for i in range(len(minimum_blocks)):
-        reconstructed_background = np.append(reconstructed_background, create_blocks[images[minimum_blocks[i]]][i])
+        minimum_blocks = np.append(minimum_blocks, np.argmin(i))
+
+    minimum_blocks = minimum_blocks.astype(int)
+    # minimum_blocks returns array [b1, b2, ... , bk] where b1 is the image that contains the arg min block in position (i,j) -> reshape
+    # h1, w1 = images[0].shape
+    # reconstructed_background = np.array(create_blocks(images[minimum_blocks[0]])[0].value)
+
+
+    # for i in range(1, len(minimum_blocks)):
+    #     addendum = np.array(create_blocks(images[minimum_blocks[i]])[i].value)
+    #     reconstructed_background = np.append(reconstructed_background, addendum)
 
     #reconstructed_background is 1D array of Block objects that are minimium SAD for each block location
-
-    background_initialization = reconstructed_background.reshape((image[0].shape))
-    background = np.zeros((background_initialization.shape))
+    # print(reconstructed_background.shape)
+    # background_initialization = reconstructed_background.reshape((h, w))
+    #
+    background = np.zeros((height, width))
+    print(background.shape)
 
     #reshape and make background matrix which converts the matrix of Block objects to the values of the Block objects
     for i in range(len(background)):
         for j in range(len(background[i])):
-            background[i][j] = background_initialization[i][j].value
+            index = i*len(background[i]) + j
+            valueij = create_blocks(images[minimum_blocks[index]])
+            print(valueij[0].value)
+            break
+            background[i][j] = valueij
 
 
     return background
@@ -111,25 +115,29 @@ if __name__ == "__main__":
     cap = cv2.VideoCapture(0)
 
     # first = None
-    image_sequence = np.array([])
+    image_sequence = []
     initial_time = time.time()
     while(True):
         t, frame = cap.read()
-        print(frame)
-        image_sequence = np.append(image_sequence, frame)
+        # print(frame)
+        # frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        image_sequence.append(frame)
         if t:
             cv2.imshow("current frame", frame)
 
         if cv2.waitKey(1) == ord('q'):
             break
 
-        if time.time() - initial_time > 10:
+        if time.time() - initial_time > 1:
             break
 
     cap.release()
 
-    cv2.imshow("helo", minimum_indexed_block(image_sequence))
+    cv2.imshow('hi', minimum_indexed_block(image_sequence))
 
+
+    # print(create_blocks(image_sequence[0]))
+    # print(image_sequence[0].shape)
 
     if cv2.waitKey(0) == ord('q'):
         cv2.destroyAllWindows()
