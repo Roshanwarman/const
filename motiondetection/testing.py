@@ -32,8 +32,7 @@ def create_blocks(image):
     wi = 0
     he = 0
     for i in range(len(width_array) -1 ):
-        if he > 0:
-            he = 0
+        he = 0
         for j in range(len(height_array) - 1):
             if i == len(width_array) - 2 and j == len(height_array) - 2:
                 blocks.append(Block(gray[height_array[j] : height -1, width_array[i] : width -1]))
@@ -47,39 +46,39 @@ def create_blocks(image):
 
         wi = wi+1
             #add edge blocks for image; this only goes to len(array) -1, so capture the end array separately
-    return blocks
+    return blocks, wi, he
 
 
-def reconstruct_background(blocks, img):
-    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    height, width = gray.shape
-
-    height_array  = np.array([y for y in range(0, height, 30)])
-    width_array = np.array([x for x in range(0, width, 30)])
-
-
-    h, w = len(height_array) -1 , len(width_array) -1
+def reconstruct_background(blocks, wi, he):
+    # gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    # height, width = gray.shape
+    #
+    # height_array  = np.array([y for y in range(0, height, 30)])
+    # width_array = np.array([x for x in range(0, width, 30)])
 
 
+    # h, w = len(height_array) -1 , len(width_array) -1
+
+    length = len(blocks)
     re_back = []
-    for i in range(h):
-        row = []
-        for j in range(w):
-            index = i*w + j
+    for i in range(he):
+        row = np.array([])
+        for j in range(wi):
+            index = i*wi + j
             row.append(blocks[index].value)
 
         re_back.append(row)
-
-    return re_back
+    hi = np.array(re_back)
+    return hi
 
 if __name__ == "__main__":
 
     img = cv2.imread('test.JPG')
 
-    blockedimg = create_blocks(img)
-    print(blockedimg)
+    blockedimg, width, height = create_blocks(img)
 
-    cv2.imshow("ui", reconstruct_background(blockedimg, img))
+    print(height, width)
+    cv2.imshow("hello", reconstruct_background(blockedimg, width, height))
 
     cv2.waitKey(0)
     cv2.destroyAllWindows()
