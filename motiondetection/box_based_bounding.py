@@ -7,15 +7,12 @@ import cv2
 import numpy as np
 
 
-
-
 class Block:
 
 
     def __init__(self, value):
         self.value = value
         # self.index = index
-
 
 
 def create_blocks(image):
@@ -27,14 +24,17 @@ def create_blocks(image):
     height, width = gray.shape
     # width_array = np.array([x for x in range(0, width, np.floor(width/16))])
     # height_array  = np.array([y for y in range(0, height, np.floor(height/16))])
-    height_array  = np.array([y for y in range(0, height, 330)])
-    width_array = np.array([x for x in range(0, width, 330)])
+    height_array  = np.array([y for y in range(0, height, 30)])
+    width_array = np.array([x for x in range(0, width, 30)])
 
 
     blocks = []
-    for i in range(len(width_array) -1 ):
-        for j in range(len(height_array) - 1):
-            if i == len(width_array) - 2 and j == len(height_array) - 2:
+    wi = 0
+    he = 0
+    for i in range(len(width_array)):
+        he = 0
+        for j in range(len(height_array)):
+            if i == len(width_array) - 1 and j == len(height_array) - 1:
                 blocks.append(Block(gray[height_array[j] : height -1, width_array[i] : width -1]))
             elif i == len(width_array) - 1:
                 blocks.append(Block(gray[height_array[j] : height_array[j+1], width_array[i] : width-1 ]))
@@ -42,9 +42,11 @@ def create_blocks(image):
                 blocks.append(Block(gray[height_array[j] : height -1, width_array[i] : width_array[i+1]]))
             else:
                 blocks.append(Block(gray[height_array[j] : height_array[j+1], width_array[i] : width_array[i+1]]))
+            he = he+1
 
+        wi = wi+1
             #add edge blocks for image; this only goes to len(array) -1, so capture the end array separately
-    return blocks
+    return blocks, wi, he
 
 
 def SAD(image1, image2):
