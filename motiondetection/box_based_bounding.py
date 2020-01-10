@@ -58,10 +58,6 @@ def SAD(image1, image2):
 
     return SAD
 
-
-
-
-
 def minimum_indexed_block(images):
     # two = images[0].shape
     SAD_tensor = SAD(images[0], images[1])
@@ -82,8 +78,23 @@ def minimum_indexed_block(images):
     for i in flipped:
         minimum_blocks = np.append(minimum_blocks, np.argmin(i))
 
-    minimum_blocks = minimum_blocks.astype(int)
+    minimum_blocks = minimum_blocks.astype(np.uint8)
+
+    memo = {} #memoizer for DP
+
+    Images = np.array([])
+
+    for i in minimum_blocks:
+        Images.append((images[minimum_blocks[i]], i))
+
+    for j in Images:
+
+        if j[1] in memo:
+            #memoization here
+
+
     # minimum_blocks returns array [b1, b2, ... , bk] where b1 is the image that contains the arg min block in position (i,j) -> reshape
+
     # h1, w1 = images[0].shape
     # reconstructed_background = np.array(create_blocks(images[minimum_blocks[0]])[0].value)
 
@@ -111,6 +122,24 @@ def minimum_indexed_block(images):
 
     return background
 
+
+def reconstruct_background(blocks, wi, he):
+    a = np.empty((blocks[0].value.shape), int)
+
+    for j in range(he):
+        a = np.vstack((a, blocks[j].value))
+
+    column = a
+
+    for i in range(1, wi):
+        a = np.empty((blocks[i*he].value.shape), int)
+        for j in range(he):
+            index = i * he + j
+            a = np.vstack((a, blocks[index].value))
+        print(a.shape)
+        column = np.hstack((column, a))
+
+    return column.astype(np.uint8)
 
 
 if __name__ == "__main__":
