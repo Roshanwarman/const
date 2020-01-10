@@ -24,8 +24,8 @@ def create_blocks(image):
     height, width = gray.shape
     # width_array = np.array([x for x in range(0, width, np.floor(width/16))])
     # height_array  = np.array([y for y in range(0, height, np.floor(height/16))])
-    height_array  = np.array([y for y in range(0, height, 30)])
-    width_array = np.array([x for x in range(0, width, 30)])
+    height_array  = np.array([y for y in range(0, height, 16)])
+    width_array = np.array([x for x in range(0, width, 16)])
 
 
     blocks = []
@@ -60,12 +60,12 @@ def SAD(image1, image2):
 
 def minimum_indexed_block(images):
     # two = images[0].shape
-    SAD_tensor = SAD(images[0], images[1])
-    gray = cv2.cvtColor(images[0], cv2.COLOR_BGR2GRAY)
-    (h, w) = gray.shape
-    height_array  = np.array([y for y in range(0, h, 330)])
-    width_array = np.array([x for x in range(0, w, 330)])
-    height, width = len(height_array), len(width_array)
+    SAD_tensor = np.asarray(SAD(images[0], images[1]))
+    # gray = cv2.cvtColor(images[0], cv2.COLOR_BGR2GRAY)
+    # (h, w) = gray.shape
+    # height_array  = np.array([y for y in range(0, h, 16)])
+    # width_array = np.array([x for x in range(0, w, 16)])
+    # height, width = len(height_array), len(width_array)
 
     for i in range(1, len(images)-1):
         vadd = SAD(images[i], images[i+1])
@@ -73,13 +73,14 @@ def minimum_indexed_block(images):
 
 
     flipped = SAD_tensor.transpose()
-    minimum_blocks = np.array([])
+    minimum_blocks = []
 
-    for i in flipped:
-        minimum_blocks = np.append(minimum_blocks, np.argmin(i))
+    for i in range(len(flipped)):
+        minimum_blocks.append(np.argmin(flipped[i]))
 
-    minimum_blocks = minimum_blocks.astype(np.uint8)
-
+    minimum_blocks = np.asarray(minimum_blocks).astype(np.uint8)
+    for i in minimum_blocks:
+        print(i)
     memo = {" " : None}
 
     Images = []
@@ -165,7 +166,7 @@ if __name__ == "__main__":
         if cv2.waitKey(1) == ord('q'):
             break
 
-        if time.time() - initial_time > 3:
+        if time.time() - initial_time > 6:
             break
 
     cap.release()
