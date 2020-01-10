@@ -50,8 +50,8 @@ def create_blocks(image):
 
 
 def SAD(image1, image2):
-    im1_block = create_blocks(image1)
-    im2_block = create_blocks(image2)
+    im1_block, w, h = create_blocks(image1)
+    im2_block, w1, h1 = create_blocks(image2)
     SAD = []
     for i in range(len(im1_block)):
         SAD.append(np.sum(np.absolute(im1_block[i].value - im2_block[i].value)))
@@ -80,19 +80,25 @@ def minimum_indexed_block(images):
 
     minimum_blocks = minimum_blocks.astype(np.uint8)
 
-    memo = {} #memoizer for DP
+    memo = {" " : None}
 
-    Images = np.array([])
+    Images = []
 
-    for i in minimum_blocks:
-        Images.append((images[minimum_blocks[i]], i))
+    for i in range(len(minimum_blocks)):
+        Images.append((images[minimum_blocks[i]], minimum_blocks[i], i))
 
+    final_blocks = []
     for j in Images:
 
         if j[1] in memo:
-            #memoization here
+            final_blocks.append(memo[j[1]][j[2]])
 
+        else:
+            blocks, w, h = create_blocks(j[0])
+            final_blocks.append(blocks[j[2]])
+            memo.update({j[1] : blocks})
 
+    return final_blocks, w, h
     # minimum_blocks returns array [b1, b2, ... , bk] where b1 is the image that contains the arg min block in position (i,j) -> reshape
 
     # h1, w1 = images[0].shape
@@ -107,20 +113,20 @@ def minimum_indexed_block(images):
     # print(reconstructed_background.shape)
     # background_initialization = reconstructed_background.reshape((h, w))
     #
-    background = np.zeros((height, width))
-    print(background.shape)
-
-    #reshape and make background matrix which converts the matrix of Block objects to the values of the Block objects
-    for i in range(len(background)):
-        for j in range(len(background[i])):
-            index = i*len(background[i]) + j
-            valueij = create_blocks(images[minimum_blocks[index]])
-            print(valueij[0].value)
-            break
-            background[i][j] = valueij
-
-
-    return background
+    # background = np.zeros((height, width))
+    # print(background.shape)
+    #
+    # #reshape and make background matrix which converts the matrix of Block objects to the values of the Block objects
+    # for i in range(len(background)):
+    #     for j in range(len(background[i])):
+    #         index = i*len(background[i]) + j
+    #         valueij = create_blocks(images[minimum_blocks[index]])
+    #         print(valueij[0].value)
+    #         break
+    #         background[i][j] = valueij
+    #
+    #
+    # return background
 
 
 def reconstruct_background(blocks, wi, he):
@@ -159,13 +165,14 @@ if __name__ == "__main__":
         if cv2.waitKey(1) == ord('q'):
             break
 
-        if time.time() - initial_time > 1:
+        if time.time() - initial_time > 3:
             break
 
     cap.release()
 
-    cv2.imshow('hi', minimum_indexed_block(image_sequence))
+    blocks, width, height =  minimum_indexed_block(image_sequence)
 
+    cv2.imshow("hello", reconstruct_background(blocks, width, height))
 
     # print(create_blocks(image_sequence[0]))
     # print(image_sequence[0].shape)
