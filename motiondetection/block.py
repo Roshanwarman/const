@@ -15,6 +15,45 @@ class Block:
         # self.index = index
 
 
+    def change_value(self, new):
+        self.value = new
+
+    def pdistribution(self):
+
+        h, w = self.value.shape
+        size = h*w
+        flat = self.value.flatten()
+
+        sorted = np.sort(flat, kind = 'heapsort')
+
+        distribution = []
+        initial = sorted[0]
+        counter = 1
+
+        for i in range(1, len(sorted)):
+            if sorted[i] == sorted[i-1]:
+                counter = counter +1
+            elif i == len(sorted) - 1:
+                counter = counter + 1
+                distribution.append((sorted[i], counter/size))
+
+            else:
+                distribution.append((sorted[i-1], counter/size))
+                counter = 1
+
+        return np.asarray(distribution)
+
+
+    def compute_entropy(self):
+
+        probabilities = [i[1] for i in self.pdistribution()]
+        entropy_array = [i*np.log(2*i) for i in probabilities]
+        entropy = -1 * np.sum(entropy_array)
+        return entropy
+
+
+
+
 def create_blocks(image):
 
     # gray = cv2.imread(image, cv2.IMREAD_GRAYSCALE)
@@ -24,8 +63,8 @@ def create_blocks(image):
     height, width = gray.shape
     # width_array = np.array([x for x in range(0, width, np.floor(width/16))])
     # height_array  = np.array([y for y in range(0, height, np.floor(height/16))])
-    height_array  = np.array([y for y in range(0, height, 16)])
-    width_array = np.array([x for x in range(0, width, 16)])
+    height_array  = np.array([y for y in range(0, height, 34)])
+    width_array = np.array([x for x in range(0, width, 34)])
 
 
     blocks = []
@@ -50,29 +89,29 @@ def create_blocks(image):
 
 
 def SAD(image1, image2):
+
     im1_block, w, h = create_blocks(image1)
     im2_block, w1, h1 = create_blocks(image2)
     SAD = []
     for i in range(len(im1_block)):
-        SAD.append(np.sum(np.absolute(im1_block[i].value - im2_block[i].value)))
+        diff = np.absolute(im1_block[i].value - im2_block[i].value)
+        mu = np.mean(im1_block[i].value)
+        standard = diff / mu
+        SAD.append(np.sum(np.absolute(standard)))
 
     return SAD
 
 def minimum_indexed_block(images):
-    # two = images[0].shape
-    SAD_tensor = np.asarray(SAD(images[0], images[1]))
-    # gray = cv2.cvtColor(images[0], cv2.COLOR_BGR2GRAY)
-    # (h, w) = gray.shape
-    # height_array  = np.array([y for y in range(0, h, 16)])
-    # width_array = np.array([x for x in range(0, w, 16)])
-    # height, width = len(height_array), len(width_array)
 
+    SAD_tensor = np.array(SAD(images[0], images[1]))
     for i in range(1, len(images)-1):
         vadd = SAD(images[i], images[i+1])
         SAD_tensor = np.vstack((SAD_tensor, vadd))
 
+    print(SAD_tensor.shape)
 
-    flipped = SAD_tensor.transpose()
+    flipped = SAD_tqensor.T
+    print(flipped[0].shape)
     minimum_blocks = []
 
     for i in range(len(flipped)):
@@ -100,17 +139,18 @@ def minimum_indexed_block(images):
             memo.update({j[1] : blocks})
 
     return final_blocks, w, h
-    # minimum_blocks returns array [b1, b2, ... , bk] where b1 is the image that contains the arg min block in position (i,j) -> reshape
 
+    # minimum_blocks returns array [b1, b2, ... , bk] where b1 is the image that contains the arg min block in position (i,j) -> reshape
+    #
     # h1, w1 = images[0].shape
     # reconstructed_background = np.array(create_blocks(images[minimum_blocks[0]])[0].value)
-
-
+    #
+    #
     # for i in range(1, len(minimum_blocks)):
     #     addendum = np.array(create_blocks(images[minimum_blocks[i]])[i].value)
     #     reconstructed_background = np.append(reconstructed_background, addendum)
-
-    #reconstructed_background is 1D array of Block objects that are minimium SAD for each block location
+    #
+    # reconstructed_background is 1D array of Block objects that are minimium SAD for each block location
     # print(reconstructed_background.shape)
     # background_initialization = reconstructed_background.reshape((h, w))
     #
@@ -149,37 +189,87 @@ def reconstruct_background(blocks, wi, he):
     return column.astype(np.uint8)
 
 
+def background_update(current_blocks, previous_blocks):
+
+    h,w = current_blocks[0].value.shape
+
+    for i in range(len(current_blocks)):
+        A = None
+
+        EBt = previous_blocks[i].compute_entropy()
+        EIt = current_blocks[i].compute_entropy()
+
+        if np.absolute(EBt - EIt) <= 1:
+            A = np.ones((h,w))
+            previous_blocks[i].change_value(current_blocks[i].value)
+        else:
+            A = np.zeros((h,w))
+
+    return previous_blocks
+
+
 if __name__ == "__main__":
     cap = cv2.VideoCapture(0)
 
     # first = None
-    image_sequence = []
+
     initial_time = time.time()
-    while(True):
+    image_sequence = []
+
+    while True:
         t, frame = cap.read()
-        # print(frame)
-        # frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        cv2.imshow("current frame", frame)
         image_sequence.append(frame)
-        if t:
-            cv2.imshow("current frame", frame)
 
-        if cv2.waitKey(1) == ord('q'):
+        if time.time() - initial_time > 2 or cv2.waitKey(1) == ord('q'):
             break
 
-        if time.time() - initial_time > 6:
-            break
-
-    cap.release()
 
     blocks, width, height =  minimum_indexed_block(image_sequence)
+    a = reconstruct_background(blocks, width, height)
+    cv2.imshow("hello", a)
 
-    cv2.imshow("hello", reconstruct_background(blocks, width, height))
 
+
+
+    cap.release()
     # print(create_blocks(image_sequence[0]))
     # print(image_sequence[0].shape)
 
     if cv2.waitKey(0) == ord('q'):
         cv2.destroyAllWindows()
+
+
+    cap2 = cv2.VideoCapture(0)
+
+    new_time = time.time()
+
+    t, frame1 = cap2.read()
+
+    frame_blocks, w, h = create_blocks(frame1)
+
+    new_scene = background_update(blocks, frame_blocks)
+
+    if cv2.waitKey(0) == ord('q'):
+        cap2.release()
+        cv2.destroyAllWindows()
+
+
+    cap1 = cv2.VideoCapture(0)
+    while True:
+        h, frame2 = cap1.read()
+        if h:
+            cv2.imshow("hello", frame2)
+            frame_blocks1, w, h = create_blocks(frame2)
+
+            new_scene = background_update(new_scene, frame_blocks1)
+
+
+        if cv2.waitKey(0) == ord('q'):
+            break
+
+    cap1.release()
+    cv2.destroyAllWindows()
         # if t:
         #
         #     frame = imutils.resize(frame, width=500)
