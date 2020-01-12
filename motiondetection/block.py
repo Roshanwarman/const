@@ -110,7 +110,7 @@ def minimum_indexed_block(images):
 
     print(SAD_tensor.shape)
 
-    flipped = SAD_tqensor.T
+    flipped = SAD_tensor.T
     print(flipped[0].shape)
     minimum_blocks = []
 
@@ -218,7 +218,7 @@ if __name__ == "__main__":
 
     while True:
         t, frame = cap.read()
-        cv2.imshow("current frame", frame)
+        # cv2.imshow("current frame", frame)
         image_sequence.append(frame)
 
         if time.time() - initial_time > 2 or cv2.waitKey(1) == ord('q'):
@@ -227,7 +227,7 @@ if __name__ == "__main__":
 
     blocks, width, height =  minimum_indexed_block(image_sequence)
     a = reconstruct_background(blocks, width, height)
-    cv2.imshow("hello", a)
+    # cv2.imshow("hello", a)
 
 
 
@@ -259,7 +259,7 @@ if __name__ == "__main__":
     while True:
         h, frame2 = cap1.read()
         if h:
-            cv2.imshow("hello", frame2)
+            # cv2.imshow("hello", frame2)
             frame_blocks1, w, h = create_blocks(frame2)
 
             new_scene = background_update(new_scene, frame_blocks1)
