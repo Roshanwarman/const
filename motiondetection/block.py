@@ -99,27 +99,36 @@ def SAD(image1, image2):
         standard = diff / mu
         SAD.append(np.sum(np.absolute(standard)))
 
-    return SAD
+    return np.asarray(SAD)
 
 def minimum_indexed_block(images):
 
-    SAD_tensor = np.array(SAD(images[0], images[1]))
+    SAD_tensor = SAD(images[0], images[1])
+    print(SAD_tensor.shape)
+    for t in SAD_tensor:
+        print(t, end = " ")
+    print("\n")
     for i in range(1, len(images)-1):
         vadd = SAD(images[i], images[i+1])
+        if vadd.astype(np.uint8)[0] == 0:
+            continue
         SAD_tensor = np.vstack((SAD_tensor, vadd))
 
     print(SAD_tensor.shape)
 
     flipped = SAD_tensor.T
-    print(flipped[0].shape)
+    print(flipped.shape)
     minimum_blocks = []
 
     for i in range(len(flipped)):
         minimum_blocks.append(np.argmin(flipped[i]))
-
+        print("hi",np.min(flipped[i]), flipped[i][np.argmin(flipped[i])])
+    for i in minimum_blocks:
+        print(i)
     minimum_blocks = np.asarray(minimum_blocks).astype(np.uint8)
     for i in minimum_blocks:
         print(i)
+
     memo = {" " : None}
 
     Images = []
@@ -218,16 +227,18 @@ if __name__ == "__main__":
 
     while True:
         t, frame = cap.read()
-        # cv2.imshow("current frame", frame)
-        image_sequence.append(frame)
+        if t:
+            cv2.imshow("current frame", frame)
+            image_sequence.append(frame)
 
-        if time.time() - initial_time > 2 or cv2.waitKey(1) == ord('q'):
+            if time.time() - initial_time > 6 or cv2.waitKey(1) == ord('q'):
+                break
+        else:
             break
-
 
     blocks, width, height =  minimum_indexed_block(image_sequence)
     a = reconstruct_background(blocks, width, height)
-    # cv2.imshow("hello", a)
+    cv2.imshow("hello", a)
 
 
 
@@ -240,36 +251,36 @@ if __name__ == "__main__":
         cv2.destroyAllWindows()
 
 
-    cap2 = cv2.VideoCapture(0)
-
-    new_time = time.time()
-
-    t, frame1 = cap2.read()
-
-    frame_blocks, w, h = create_blocks(frame1)
-
-    new_scene = background_update(blocks, frame_blocks)
-
-    if cv2.waitKey(0) == ord('q'):
-        cap2.release()
-        cv2.destroyAllWindows()
-
-
-    cap1 = cv2.VideoCapture(0)
-    while True:
-        h, frame2 = cap1.read()
-        if h:
-            # cv2.imshow("hello", frame2)
-            frame_blocks1, w, h = create_blocks(frame2)
-
-            new_scene = background_update(new_scene, frame_blocks1)
-
-
-        if cv2.waitKey(0) == ord('q'):
-            break
-
-    cap1.release()
-    cv2.destroyAllWindows()
+    # cap2 = cv2.VideoCapture(0)
+    #
+    # new_time = time.time()
+    #
+    # t, frame1 = cap2.read()
+    #
+    # frame_blocks, w, h = create_blocks(frame1)
+    #
+    # new_scene = background_update(blocks, frame_blocks)
+    #
+    # if cv2.waitKey(0) == ord('q'):
+    #     cap2.release()
+    #     cv2.destroyAllWindows()
+    #
+    #
+    # cap1 = cv2.VideoCapture(0)
+    # while True:
+    #     h, frame2 = cap1.read()
+    #     if h:
+    #         cv2.imshow("hello", frame2)
+    #         frame_blocks1, w, h = create_blocks(frame2)
+    #
+    #         new_scene = background_update(new_scene, frame_blocks1)
+    #
+    #
+    #     if cv2.waitKey(0) == ord('q'):
+    #         break
+    #
+    # cap1.release()
+    # cv2.destroyAllWindows()
         # if t:
         #
         #     frame = imutils.resize(frame, width=500)
