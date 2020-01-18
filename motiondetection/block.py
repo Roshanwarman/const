@@ -61,8 +61,8 @@ def create_blocks(image):
     height, width = gray.shape
     # width_array = np.array([x for x in range(0, width, np.floor(width/16))])
     # height_array  = np.array([y for y in range(0, height, np.floor(height/16))])
-    height_array  = np.array([y for y in range(0, height, 30)])
-    width_array = np.array([x for x in range(0, width, 30)])
+    height_array  = np.array([y for y in range(0, height, 20)])
+    width_array = np.array([x for x in range(0, width, 20)])
 
 
     blocks = []
@@ -229,13 +229,15 @@ if __name__ == "__main__":
             cv2.imshow("current frame", frame)
             image_sequence.append(frame)
 
-            if time.time() - initial_time > 6 or cv2.waitKey(1) == ord('q'):
+            if time.time() - initial_time > 2 or cv2.waitKey(1) == ord('q'):
                 break
         else:
             break
 
     blocks, width, height =  minimum_indexed_block(image_sequence)
     a = reconstruct_background(blocks, width, height)
+
+    print(a)
     cv2.imshow("hello", a)
 
 
@@ -245,8 +247,8 @@ if __name__ == "__main__":
     # print(create_blocks(image_sequence[0]))
     # print(image_sequence[0].shape)
 
-    if cv2.waitKey(0) == ord('q'):
-        cv2.destroyAllWindows()
+    # if cv2.waitKey(0) == ord('q'):
+    #     cv2.destroyAllWindows()
 
 
     # cap2 = cv2.VideoCapture(0)
@@ -264,86 +266,93 @@ if __name__ == "__main__":
     #     cv2.destroyAllWindows()
     #
     #
-    cap1 = cv2.VideoCapture(0)
+    # cap1 = cv2.VideoCapture(0)
+    # while True:
+    #     h, frame2 = cap1.read()
+    #     if h:
+    #         cv2.imshow("hello", frame2)
+    #         frame_blocks1, w, h = create_blocks(frame2)
+    #
+    #         new_scene = background_update(new_scene, frame_blocks1)
+    #
+    #
+    #     if cv2.waitKey(0) == ord('q'):
+    #         break
+    #
+    # cap1.release()
+    # cv2.destroyAllWindows()
+
+
+    cap3 = cv2.VideoCapture(0)
+
     while True:
-        h, frame2 = cap1.read()
-        if h:
-            cv2.imshow("hello", frame2)
-            frame_blocks1, w, h = create_blocks(frame2)
 
-            new_scene = background_update(new_scene, frame_blocks1)
+        t, framei = cap3.read()
 
-
-        if cv2.waitKey(0) == ord('q'):
-            break
-
-    cap1.release()
-    cv2.destroyAllWindows()
         if t:
-
-            frame = imutils.resize(frame, width=500)
-            gray1 = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-
-            width, height = gray1.shape
-
-            width_array = np.array([x for x in range(0, width, round(width/16))])
-            height_array  = np.array([y for y in range(0, height, round(height/16))])
-
-
-            gridx, gridy= np.meshgrid(height_array, width_array)
-
-            print(np.amax(height_array))
-            print(np.amax(width_array))
-
-            frame_height, frame_width = gray1.shape
-            print(gray1.shape)
-
-            border for frame; consider removing later if SAD doesn't work
-
-            frame = cv2.line(frame, (0, 0), (0, frame_width), (0,0,0), 1)
-            frame = cv2.line(frame, (0, 0), (frame_height, 0), (0,0,0), 1)
-            frame = cv2.line(frame, (frame_height, frame_width), (0, frame_width), (0,255,0), 1)
-            frame = cv2.line(frame, (frame_height, 0), (frame_height, frame_width),  (0,255,0), 1)
-
-
-
-            for t in width_array:
-                frame = cv2.line(frame, (0, t), (frame_width, t), (255,0, 255), 1)
-            for f in height_array:
-                frame = cv2.line(frame, (f, 0), (f, frame_height), (255,0,255), 1)
-
+            # frame = imutils.resize(frame, width=500)
+            gray1 = cv2.cvtColor(framei, cv2.COLOR_BGR2GRAY)
+    #
+    #         width, height = gray1.shape
+    #
+    #         width_array = np.array([x for x in range(0, width, round(width/16))])
+    #         height_array  = np.array([y for y in range(0, height, round(height/16))])
+    #
+    #
+    #         gridx, gridy= np.meshgrid(height_array, width_array)
+    #
+    #         print(np.amax(height_array))
+    #         print(np.amax(width_array))
+    #
+    #         frame_height, frame_width = gray1.shape
+    #         print(gray1.shape)
+    #
+    #         border for frame; consider removing later if SAD doesn't work
+    #
+    #         frame = cv2.line(frame, (0, 0), (0, frame_width), (0,0,0), 1)
+    #         frame = cv2.line(frame, (0, 0), (frame_height, 0), (0,0,0), 1)
+    #         frame = cv2.line(frame, (frame_height, frame_width), (0, frame_width), (0,255,0), 1)
+    #         frame = cv2.line(frame, (frame_height, 0), (frame_height, frame_width),  (0,255,0), 1)
+    #
+    #
+    #
+    #         for t in width_array:
+    #             frame = cv2.line(frame, (0, t), (frame_width, t), (255,0, 255), 1)
+    #         for f in height_array:
+    #             frame = cv2.line(frame, (f, 0), (f, frame_height), (255,0,255), 1)
+    #
             gray = cv2.GaussianBlur(gray1, (21, 21), 0)
-
-            if first is None:
-                first_time = time.time()
-                first = gray
-                continue
-
-            if time.time() - first_time > 1:
-                first_time = time.time()
-                first = gray
-
-
-
-            frame_difference = cv2.absdiff(first, gray)
+    #
+    #         if first is None:
+    #             first_time = time.time()
+    #             first = gray
+    #             continue
+    #
+    #         if time.time() - first_time > 1:
+    #             first_time = time.time()
+    #             first = gray
+    #
+    #
+    #
+            frame_difference = cv2.absdiff(a, gray)
             threshold = cv2.threshold(frame_difference, 25, 255, cv2.THRESH_BINARY)[1]
 
             threshold = cv2.dilate(threshold, None, iterations = 2)
             countours = cv2.findContours(threshold, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
-
+    #
             countours = imutils.grab_contours(countours)
 
             for c in countours:
                 if cv2.contourArea(c) < 10000:
                     continue
-
+    #
                 (x, y, w, h) = cv2.boundingRect(c)
                 frame = cv2.rectangle(frame, (x,y), (x+w, y+h) , (0,255,0), 1)
-
-
-
+    #
+    #
+    #
             cv2.imshow("constructionbox", frame)
-
+    #
         if cv2.waitKey(1) == ord('q'):
             break
     cap.release()
