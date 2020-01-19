@@ -296,19 +296,6 @@ if __name__ == "__main__":
     if cv2.waitKey(0) == 'q':
         cv2.destroyAllWindows()
 
-
-
-
-    #
-    # r, c = blocks[0].value.shape
-    # h, w = a.shape
-    # new_back = a[r-1:, :]
-    # print(a.shape)
-    # print(new_back.shape)
-    # print(frame_shape)
-    #
-    # print(new_back.shape == frame_shape)
-
     # cap3 = cv2.VideoCapture(0)
     # first = None
     #
@@ -365,7 +352,7 @@ if __name__ == "__main__":
     #
     # #
     # #
-    #         frame_difference = cv2.absdiff(first, gray)
+    #         frame_difference = cv2.absdiff(a, gray[:, :638])
     #         threshold = cv2.threshold(frame_difference, 25, 255, cv2.THRESH_BINARY)[1]
     #
     #         threshold = cv2.dilate(threshold, None, iterations = 2)
